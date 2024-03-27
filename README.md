@@ -1,14 +1,14 @@
 # Spotify Search
 <p>
     <a href="https://choosealicense.com/licenses/mit/" target="_blank">
-        <img src="https://img.shields.io/github/license/matcsantos/SpotifySearch" alt="LICENSE">
+        <img src="https://img.shields.io/github/license/matcsantos/SearchSpotify" alt="LICENSE">
     </a>
-    <a href="https://pypi.org/project/spotifysearch/" target="_blank">
-        <img src="https://img.shields.io/pypi/v/spotifysearch?color=33BBFF&label=PIP" alt="PIP">
+    <a href="https://pypi.org/project/searchspotify/" target="_blank">
+        <img src="https://img.shields.io/pypi/v/searchspotify?color=33BBFF&label=PIP" alt="PIP">
     </a>
 </p>
 
-SpotifySearch is a complete wrapper for the Search API provided by Spotify written in Python.
+SearchSpotify is a complete wrapper for the Search API provided by Spotify written in Python.
 
 It has built-in classes that helps you access the data returned by Spotify, alongside with useful methods for exporting data.
 
@@ -20,20 +20,20 @@ Check the [documentation](https://readthedocs.org/) for more information on clas
 - Access and export audio and image files, such as album covers for example.
 
 ## Installation
-SpotifySearch depends on **[requests](https://pypi.org/project/requests/)**. You can easily install it by using **PIP**
+SearchSpotify depends on **[requests](https://pypi.org/project/requests/)**. You can easily install it by using **PIP**
 ```bash
 python -m pip install requests
 ```
 
-Then, you can safely install SpotifySearch using the following command:
+Then, you can safely install SearchSpotify using the following command:
 ```bash
-python -m pip install spotifysearch
+python -m pip install searchspotify
 ```
 
 ## Testing your installation
 You can test your installation using python interactive shell
 ```python
->>> import spotifysearch
+>>> import searchspotify
 ```
 
 ## Getting access to the API
@@ -48,7 +48,7 @@ You should see something like this: <br>
 
 Once you've created your application, you'll receive a **client ID** and a **client secret**. These are your credentials, you should store them in a **safe environment**.
 
-**IMPORTANT: You should not store your credentials inside of your code if you're planning to publish it. You should use Environment Variables instead. Check [this section](https://github.com/matcsantos/SpotifySearch#keeping-your-credentials-safe) to learn how to keep your credentials safe.**
+**IMPORTANT: You should not store your credentials inside of your code if you're planning to publish it. You should use Environment Variables instead. Check [this section](https://github.com/ufoptg/SearchSpotify#keeping-your-credentials-safe) to learn how to keep your credentials safe.**
 
 ## Making your first call
 So now that you have your **credentials**, you can start making your calls to the API. 
@@ -56,8 +56,8 @@ So now that you have your **credentials**, you can start making your calls to th
 Open your editor and run the following code:
 
 ```python
-# First, we import our Client class from spotifysearch.client
-from spotifysearch.client import Client
+# First, we import our Client class from searchspotify.client
+from searchspotify.client import Client
 
 # Then, we create an instance of that class passing our credentials as arguments.
 # IMPORTANT: Don't put your credentials inside your code if your planning to publish it.
@@ -87,7 +87,7 @@ https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT
 
 That seems to be a lot of code, but you can simplify it a lot, like so:
 ```python
-from spotifysearch.client import Client
+from searchspotify.client import Client
 
 myclient = Client("YOUR_CLIENT_ID", "YOUR_CLIENT_SECRET")
 track = myclient.search("Never gonna give you up").get_tracks()[0]
