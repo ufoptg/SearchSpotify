@@ -1,3 +1,22 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Copyright 2020-2023 (c) Randy W @xtdevs, @xtsea
+# Nimbus ~ UserBot
+# Copyright (C) 2023 NimbusTheCloud, ufoptg, @TrueSaiyan
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# This file is a part of < https://github.com/ufoptg/Nimbus/ >
+# PLease read the GNU Affero General Public License in
+# <https://www.github.com/ufoptg/Nimbus/blob/main/LICENSE/>.
+# If not, see <https://www.gnu.org/licenses/>.
 
 # THIS FILE IS RESPONSABLE FOR MANY CLASS DECLARATIONS
 
@@ -5,58 +24,55 @@ import json
 import math
 from base64 import b64encode
 from urllib.request import urlretrieve
-from . import constructor
-from . import calls
+
+from . import calls, constructor
 
 
 # AUTHENTICATION AND TOKENS
 class Authenticator:
 
-    def __init__(self, client_id:str, client_secret:str):
+    def __init__(self, client_id: str, client_secret: str):
         self.credentials = self.encode_credentials(client_id, client_secret)
-    
 
     def encode_credentials(self, client_id, client_secret):
-        credentials = f'{client_id}:{client_secret}'
-        encoded_credentials = b64encode(credentials.encode('utf-8'))
-        return str(encoded_credentials, 'utf-8')
-
+        credentials = f"{client_id}:{client_secret}"
+        encoded_credentials = b64encode(credentials.encode("utf-8"))
+        return str(encoded_credentials, "utf-8")
 
     def get_acess_token(self):
         response = calls.call_acess_token(self.credentials)
-        return response.json()['access_token']
+        return response.json()["access_token"]
 
 
 # OBJECTS
 
+
 # Base class for all classes
-class Base: 
-    
+class Base:
+
     def __init__(self, data, type, name, url, id):
         self.data = data
         self.type = type
         self.name = name
         self.url = url
         self.id = id
-    
 
-    def export_json(self, path:str):
-        file = open(path, 'w')
+    def export_json(self, path: str):
+        file = open(path, "w")
         json.dump(self.data, file, indent=4)
         file.close()
 
 
 # Base class for track-like objects
-class TrackBase(Base): 
-    
+class TrackBase(Base):
+
     def __init__(self, data, type, name, url, id, explicit, duration_ms):
         super().__init__(data, type, name, url, id)
         self.explicit = explicit
         self.duration_ms = duration_ms
-    
 
     def get_formatted_duration(self) -> dict:
-        
+
         duration_in_seconds = self.duration_ms / 1000
         hours = 0
         mins = math.floor(duration_in_seconds // 60)
@@ -64,36 +80,35 @@ class TrackBase(Base):
         if mins >= 60:
             hours = math.floor(mins // 60)
             mins = math.floor(mins % 60)
-        
+
         secs = math.floor(duration_in_seconds % 60)
 
-        return {'hours':hours, 'minutes':mins, 'seconds':secs}
-    
+        return {"hours": hours, "minutes": mins, "seconds": secs}
 
     def get_string_duration(self) -> str:
-     
+
         duration = self.get_formatted_duration()
         format = self.__format_duration
-        
-        hours = format(str(duration['hours']))
-        mins = format(str(duration['minutes']))
-        secs = format(str(duration['seconds']))       
-        
+
+        hours = format(str(duration["hours"]))
+        mins = format(str(duration["minutes"]))
+        secs = format(str(duration["seconds"]))
+
         if int(hours):
-            return f'{hours}:{mins}:{secs}'
+            return f"{hours}:{mins}:{secs}"
         else:
-            return f'{mins}:{secs}'
+            return f"{mins}:{secs}"
 
-
-    def __format_duration(self, value:str):
+    def __format_duration(self, value: str):
         if len(value) < 2:
-            return ('0' + value)
-        else: return value
+            return "0" + value
+        else:
+            return value
 
 
 class Artist(Base):
 
-    def __init__(self, data:dict, type:str, name:str, url:str, id:str):
+    def __init__(self, data: dict, type: str, name: str, url: str, id: str):
         super().__init__(data, type, name, url, id)
 
 
@@ -103,7 +118,6 @@ class AlbumCover:
         self.width = width
         self.height = height
         self.url = url
-    
 
     def export_image(self, path):
         urlretrieve(self.url, path)
@@ -111,22 +125,32 @@ class AlbumCover:
 
 class Album(Base):
 
-    def __init__(self, data:dict, type:str, name:str, url:str, id:str, 
-    images:list, artists:list, available_markets:list, release_date:str, total_tracks:int):
-        
+    def __init__(
+        self,
+        data: dict,
+        type: str,
+        name: str,
+        url: str,
+        id: str,
+        images: list,
+        artists: list,
+        available_markets: list,
+        release_date: str,
+        total_tracks: int,
+    ):
+
         super().__init__(data, type, name, url, id)
         self.images = images
         self.artists = artists
         self.available_markets = available_markets
         self.release_date = release_date
         self.total_tracks = total_tracks
-        
+
 
 class TrackPreview:
 
     def __init__(self, url):
         self.url = url
-    
 
     def export_audio(self, path):
         urlretrieve(self.url, path)
@@ -134,10 +158,23 @@ class TrackPreview:
 
 class Track(TrackBase):
 
-    def __init__(self, data:dict, type:str, name:str, url:str, id:str, explicit:bool,
-    duration_ms:int, preview:TrackPreview, artists:list, album:Album, available_markets:list, 
-    disc_number:int, popularity:int):
-        
+    def __init__(
+        self,
+        data: dict,
+        type: str,
+        name: str,
+        url: str,
+        id: str,
+        explicit: bool,
+        duration_ms: int,
+        preview: TrackPreview,
+        artists: list,
+        album: Album,
+        available_markets: list,
+        disc_number: int,
+        popularity: int,
+    ):
+
         super().__init__(data, type, name, url, id, explicit, duration_ms)
         self.preview = preview
         self.artists = artists
@@ -149,10 +186,24 @@ class Track(TrackBase):
 
 class Episode(TrackBase):
 
-    def __init__(self, data:dict, type:str, name:str, url:str, id:str, 
-    explicit:bool,  duration_ms:int, preview:str, description:str, html_description:str,
-    images:list, language:str, languages:list, release_date:str):
-        
+    def __init__(
+        self,
+        data: dict,
+        type: str,
+        name: str,
+        url: str,
+        id: str,
+        explicit: bool,
+        duration_ms: int,
+        preview: str,
+        description: str,
+        html_description: str,
+        images: list,
+        language: str,
+        languages: list,
+        release_date: str,
+    ):
+
         super().__init__(data, type, name, url, id, explicit, duration_ms)
         self.preview = preview
         self.description = description
@@ -163,57 +214,94 @@ class Episode(TrackBase):
         self.release_date = release_date
 
 
+class Playlist(Base):
+    def __init__(
+        self,
+        data: dict,
+        type: str,
+        name: str,
+        url: str,
+        id: str,
+        owner: str,
+        description: str,
+        images: list,
+        tracks: list,
+        public: bool,
+    ):
+        super().__init__(data, type, name, url, id)
+        self.owner = owner
+        self.description = description
+        self.images = images
+        self.tracks = tracks
+        self.public = public
+
+
 # CLIENT OBJECTS
 class Results(Base):
 
     def __init__(self, data):
         self.data = data
-    
 
-    def __get_items(self, type):     
-        
-        if type == 'artist':
+    def __get_items(self, type):
+
+        if type == "artist":
             try:
-                data = self.data['artists']['items']
+                data = self.data["artists"]["items"]
                 func = constructor.artist
             except KeyError:
                 return []
-        
-        elif type == 'track':
+
+        elif type == "track":
             try:
-                data = self.data['tracks']['items']
+                data = self.data["tracks"]["items"]
                 func = constructor.track
             except KeyError:
                 return []
-        
-        elif type == 'album':
+
+        elif type == "album":
             try:
-                data = self.data['albums']['items']
+                data = self.data["albums"]["items"]
                 func = constructor.album
             except KeyError:
                 return []
-        
-        elif type == 'episode':
+
+        elif type == "episode":
             try:
-                data = self.data['episodes']['items']
+                data = self.data["episodes"]["items"]
                 func = constructor.episode
             except KeyError:
-                return [] 
-        
+                return []
+
+        elif type == "playlist":
+            try:
+                data = self.data["playlists"]["items"]
+                func = constructor.playlist
+            except KeyError:
+                return []
+
         return [func(item) for item in data]
+        
+    def get_track(self) -> list:
+        # Helper function to wrap single track data in a list
+        def wrap_single_track(track_data):
+            if isinstance(track_data, dict):
+                return [track_data]
+            else:
+                return track_data
 
-
+        return self.__get_items("track")
+        
     def get_tracks(self) -> list:
-        return self.__get_items('track')
-    
+        return self.__get_items("track")
 
     def get_artists(self) -> list:
-        return self.__get_items('artist')
-    
+        return self.__get_items("artist")
 
     def get_albums(self) -> list:
-        return self.__get_items('album')
-
+        return self.__get_items("album")
 
     def get_episodes(self) -> list:
-        return self.__get_items('episode')
+        return self.__get_items("episode")
+
+    def get_playlists(self) -> list:
+        return self.__get_items("playlist")
