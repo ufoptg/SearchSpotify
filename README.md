@@ -3,7 +3,7 @@
     <a href="https://choosealicense.com/licenses/mit/" target="_blank">
         <img src="https://img.shields.io/github/license/ufoptg/SearchSpotify" alt="LICENSE">
     </a>
-    <a href="https://pypi.org/project/searchspotify/" target="_blank">
+    <a href="https://pypi.org/project/searchspotify/0.0.7" target="_blank">
         <img src="https://img.shields.io/pypi/v/searchspotify?color=33BBFF&label=PIP" alt="PIP">
     </a>
 </p>
