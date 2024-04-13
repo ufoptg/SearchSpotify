@@ -52,6 +52,7 @@ class Client:
         market: str = None,
         limit: int = None,
         offset: int = None,
+        json: bool = False,
     ) -> Results:
         """
         Searches Spotify based on the provided keywords and parameters.
@@ -62,6 +63,7 @@ class Client:
         :param market: Market to search in (optional).
         :param limit: Maximum number of items to return (optional).
         :param offset: Offset for pagination (optional).
+        :param json: If True, returns raw JSON response. Otherwise, returns parsed Results object.
         :return: Results of the search.
         """
         access_token = self.auth.get_acess_token()
@@ -85,6 +87,10 @@ class Client:
 
         args = (keywords, types, filters, market, limit, offset)
         response = calls.call_search(access_token, args)
+
+        if json == True:
+            return Results(response.json())
+
         if "playlist::" in keywords:
             return Playlists(response.json())
         elif "album::" in keywords:

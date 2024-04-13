@@ -614,6 +614,7 @@ class Playlists:
         self.playlist_name = playlist_data.get("name", "Unknown Playlist")
         self.description = playlist_data.get("description", "")
         self.total_tracks = playlist_data.get("tracks", {}).get("total", 0)
+        self.thumbnail_url = playlist_data.get("images", [])[0].get("url")
         self.tracks = [
             PlaylistTrack(item.get("track"))
             for item in playlist_data.get("tracks", {}).get("items", [])
