@@ -1,10 +1,10 @@
 Metadata-Version: 2.1
 Name: searchspotify
-Version: 0.0.6
+Version: 0.0.8
 Summary: A complete wrapper for the Search API provided by Spotify written in Python.
 Home-page: https://github.com/ufoptg/SearchSpotify
 Author: True Saiyan
-License: UNKNOWN
+License: MIT License
 Project-URL: Bug Tracker, https://github.com/ufoptg/SearchSpotify/issues
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
