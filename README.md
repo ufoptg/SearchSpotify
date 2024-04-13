@@ -3,7 +3,7 @@
     <a href="https://choosealicense.com/licenses/mit/" target="_blank">
         <img src="https://img.shields.io/github/license/ufoptg/SearchSpotify" alt="LICENSE">
     </a>
-    <a href="https://pypi.org/project/searchspotify/0.0.7" target="_blank">
+    <a href="https://pypi.org/project/searchspotify/" target="_blank">
         <img src="https://img.shields.io/pypi/v/searchspotify?color=33BBFF&label=PIP" alt="PIP">
     </a>
 </p>
@@ -57,7 +57,7 @@ Open your editor and run the following code:
 
 ```python
 # First, we import our Client class from searchspotify.client
-from searchspotify.client import Client
+from searchspotify import Client
 
 # Then, we create an instance of that class passing our credentials as arguments.
 # IMPORTANT: Don't put your credentials inside your code if your planning to publish it.
@@ -76,6 +76,34 @@ track = tracks[0]
 print(track.name, "-", track.artists[0].name)
 print(track.url)
 
+#Using Album or Playlist links
+playlist = myclient.search("https://open.spotify.com/playlist/37i9dQZEVXbmHwm9TPg9pf?si=fUjIaGonRlW3GfkZ9kuxFg")
+
+p(f"Playlist title: {playlist.playlist_name}")
+p(f"total tracks: {playlist.total_tracks}")
+p(f"description: {playlist.description}")
+p(f"total duration: {playlist.total_duration()}")
+for track in playlist.tracks:
+    print("Track Name:", track.track_name)
+    print("Track URL:", track.spotify_url)
+    print("Duration:", track.get_string_duration())
+
+
+album = myclient.search("https://open.spotify.com/album/5nUuEb92id5CtdQCtOs7a1")
+
+print("Album Name:", album.album_name)
+print("Album Label:", album.label)
+print("Album popularity:", album.popularity)
+print("Album Thumb:", album.thumbnail_url)
+print("Artists:", album.artists)
+print("Release Date:", album.release_date)
+print("Total Tracks:", album.total_tracks)
+print("Total Duration:", album.total_duration_string())
+for track in album.tracks:
+    print("Track Name:", track.track_name)
+    print("Track Number:", track.track_number)
+    print("Track URL:", track.spotify_url)
+    print("Duration:", track.get_string_duration())
 ```
 
 **This should be your result:**
