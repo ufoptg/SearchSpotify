@@ -548,7 +548,11 @@ class PlaylistTrack:
         self.album = track_data.get("album", {}).get("name")
         self.release_date = track_data.get("album", {}).get("release_date")
         self.preview_url = track_data.get("preview_url")
-        self.thumbnail_url = track_data.get("album", {}).get("images", [])[0].get("url")
+        self.thumbnail_url = (
+            track_data.get("album", {}).get("images", [])[0].get("url")
+            if track_data.get("album", {}).get("images")
+            else None
+        )
         self.duration_ms = track_data.get("duration_ms", 0)
 
     def get_formatted_duration(self) -> dict:
