@@ -49,3 +49,21 @@ def call_search(acess_token, args):
     endpoint = urlbuilder.search_endpoint(*args)
     headers = {"Authorization": f"Bearer {acess_token}"}
     return get(url=endpoint, headers=headers)
+
+
+def call_track_preview(track_id, access_token):
+    """
+    Calls Spotify API to retrieve the preview URL for a given track.
+
+    :param track_id: Spotify track ID.
+    :param access_token: Access token for authentication.
+    :return: Preview URL if available, None otherwise.
+    """
+    endpoint = f"https://api.spotify.com/v1/tracks/{track_id}"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = get(url=endpoint, headers=headers)
+    if response.status_code == 200:
+        track_data = response.json()
+        if "preview_url" in track_data:
+            return track_data["preview_url"]
+    return None
