@@ -142,3 +142,17 @@ class Client:
         except Exception as e:
             print(f"Error extracting title: {e}")
         return None
+
+    def get_track_preview(self, track_link: str) -> str:
+        """
+        Retrieves the preview link for a given track.
+
+        :param track_link: Link to the track.
+        :return: Preview link if available, empty string otherwise.
+        """
+        if "spotify.com/track/" in track_link:
+            track_id = track_link.split("/")[-1]
+            access_token = self.auth.get_acess_token()
+            preview_url = calls.call_track_preview(track_id, access_token)
+            return preview_url if preview_url else ""
+        return ""
