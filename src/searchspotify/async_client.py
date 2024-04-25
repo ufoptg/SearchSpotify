@@ -1,0 +1,140 @@
+import aiohttp
+import re
+
+import requests
+from bs4 import BeautifulSoup
+
+from . import calls
+from .classes import Albums, Authenticator, Playlists, Results
+
+
+
+class Client:
+    """
+    Client class for interacting with the Spotify API.
+    """
+
+    def __init__(self, client_id, client_secret):
+        """
+        Initializes the Client with the provided client ID and secret.
+
+        :param client_id: Spotify client ID.
+        :param client_secret: Spotify client secret.
+        """
+        self.auth = Authenticator(client_id, client_secret)
+
+    async def search(
+        self,
+        keywords: str,
+        *,
+        types: list = ["track"],
+        filters: dict = {},
+        market: str = None,
+        limit: int = None,
+        offset: int = None,
+        json: bool = False,
+    ) -> Results:
+        """
+        Searches Spotify based on the provided keywords and parameters asynchronously.
+
+        :param keywords: Keywords for the search.
+        :param types: Types of entities to search for (default is ["track"]).
+        :param filters: Filters to apply to the search.
+        :param market: Market to search in (optional).
+        :param limit: Maximum number of items to return (optional).
+        :param offset: Offset for pagination (optional).
+        :param json: If True, returns raw JSON response. Otherwise, returns parsed Results object.
+        :return: Results of the search.
+        """
+        access_token = await self.auth.get_acess_token()
+
+        if "spotify.com/track" in keywords:
+            title = await self.extract_title(keywords)  # Await here
+            if title:
+                keywords = title
+
+        elif "spotify.com" in keywords:
+            entities = ["track", "playlist", "album", "artist"]
+            for entity in entities:
+                if entity in keywords:
+                    entity_id = self.extract_id(keywords, entity)
+                    if not entity_id:
+                        raise ValueError(f"Invalid {entity.capitalize()} link")
+                    keywords = f"{entity}::{entity_id}"
+                    break
+            else:
+                raise ValueError("Unsupported Spotify link")
+
+        args = (keywords, types, filters, market, limit, offset)
+        response = await calls.call_search(access_token, args)
+
+        if json == True:
+            return Results(response)
+
+        if "playlist::" in keywords:
+            return Playlists(response)
+        elif "album::" in keywords:
+            return Albums(response)
+        else:
+            return Results(response)
+
+    async def get_track_preview(self, track_link: str) -> str:
+        """
+        Retrieves the preview link for a given track asynchronously.
+
+        :param track_link: Link to the track.
+        :return: Preview link if available, empty string otherwise.
+        """
+        if "spotify.com/track/" in track_link:
+            track_id = track_link.split("/")[-1]
+            access_token = await self.auth.get_acess_token()
+            preview_url = await calls.call_track_preview(track_id, access_token)
+            return preview_url if preview_url else ""
+        return ""
+
+    def extract_id(self, link, entity):
+        """
+        Extracts ID from the Spotify link based on the entity type.
+
+        :param link: Spotify link.
+        :param entity: Entity type (track, playlist, album, artist).
+        :return: Extracted ID or None if not found.
+        """
+        pattern = rf"/{entity}/([a-zA-Z0-9]+)"
+        match = re.search(pattern, link)
+        if match:
+            return match.group(1)
+        return None
+
+    async def extract_title(self, link):
+        """
+        Extracts the title from the Spotify link asynchronously.
+
+        :param link: Spotify link.
+        :return: Extracted title or None if not found.
+        """
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(link) as response:
+                    if response.status == 200:
+                        html = await response.text()
+                        soup = BeautifulSoup(html, "html.parser")
+                        title_tag = soup.find("title")
+                        title = title_tag.text if title_tag else None
+                        title = re.sub(r"[#!$]", "", title)
+                        if title and " - " in title and "by" in title:
+                            title_parts = title.split(" - ", 1)
+                            if len(title_parts) > 1:
+                                title = (
+                                    title_parts[0].strip()
+                                    + " "
+                                    + title_parts[1].split(" by ", 1)[-1].strip()
+                                )
+                            else:
+                                title = title_parts[0].strip()
+                        if title and "| Spotify" in title:
+                            title = title.split("| Spotify")[0].strip()
+                        return title
+        except Exception as e:
+            print(f"Error extracting title: {e}")
+        return None
