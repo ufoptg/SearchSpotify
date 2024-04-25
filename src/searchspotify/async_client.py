@@ -27,7 +27,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from . import async_calls
-from .classes import Albums, Authenticator, Playlists, Results
+from .async_classes import Albums, Authenticator, Playlists, Results
 
 
 
