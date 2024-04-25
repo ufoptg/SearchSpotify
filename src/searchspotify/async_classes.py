@@ -29,3 +29,37 @@ from . import async_calls, constructor
 
 
 class Authenticator:
+    """
+    Handles authentication and token retrieval for Spotify API.
+    """
+
+    def __init__(self, client_id: str, client_secret: str):
+        """
+        Initializes the Authenticator with client credentials.
+
+        :param client_id: Spotify client ID.
+        :param client_secret: Spotify client secret.
+        """
+        self.credentials = self.encode_credentials(client_id, client_secret)
+
+    def encode_credentials(self, client_id, client_secret):
+        """
+        Encodes client credentials for token retrieval.
+
+        :param client_id: Spotify client ID.
+        :param client_secret: Spotify client secret.
+        :return: Encoded credentials.
+        """
+        credentials = f"{client_id}:{client_secret}"
+        encoded_credentials = b64encode(credentials.encode("utf-8"))
+        return str(encoded_credentials, "utf-8")
+
+    async def get_access_token(self):
+        """
+        Retrieves access token using encoded credentials asynchronously.
+
+        :return: Access token.
+        """
+        response = await calls.call_acess_token(self.credentials)
+        return response["access_token"]
+
