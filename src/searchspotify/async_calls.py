@@ -21,7 +21,7 @@
 # THIS FILE IS RESPONSABLE FOR API CALLS
 
 import aiohttp
-from . import urlbuilder
+from . import async_urlbuilder
 
 async def call_acess_token(credentials):
     """
